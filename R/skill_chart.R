@@ -6,6 +6,7 @@ font_add_google("Source Sans Pro", "ssp")
 showtext_auto()
 showtext_opts(dpi = 600)
 bg_col <- "#F7F7F7"
+highlight_col <- "#009FB7"
   
 skills_data <- read_xlsx(here("data/cv-data.xlsx"), sheet = "skills")
 
@@ -27,15 +28,15 @@ proc_skill_data %>%
   ggplot(aes(x = proficiency, y = language)) + 
   geom_point(
     size = 4.5,
-    color = "#009FB7",
-    fill = "#009FB7",
+    color = highlight_col,
+    fill = highlight_col,
     shape = 21
   ) + 
   geom_point(
     data = skill_data_full,
     mapping = aes(x = proficiency, y = language),
     size = 4.5,
-    color = "#009FB7",
+    color = highlight_col,
     shape = 21
     ) + 
   facet_wrap(
@@ -56,7 +57,7 @@ proc_skill_data %>%
       margin = margin(r = 15), 
       color = "black",
       lineheight = 1.25),
-    strip.background = element_rect(fill = "#009FB7"),
+    strip.background = element_rect(fill = highlight_col),
     strip.text = element_text(color = bg_col, face = "bold")
   )
 

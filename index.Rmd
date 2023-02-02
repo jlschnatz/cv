@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   pagedown::html_resume:
     css: ['css/styles.css', 'resume']
-    self_contained: false
+    self_contained: true
 ---
 
 ```{r setup, include=FALSE}
@@ -42,12 +42,23 @@ icon_set <- c(
 icon_set %>% map_lgl(install_icon)
 ```
 
+<!-- ```{css, echo=FALSE} -->
+<!-- .pagedjs_page:not(:first-of-type) { -->
+<!--   --sidebar-width: 0rem; -->
+<!--   --sidebar-background-color: #ffffff; -->
+<!--   --main-width: calc(var(--content-width) - var(--sidebar-width)); -->
+<!--   --decorator-horizontal-margin: 0.2in; -->
+<!-- } -->
+<!-- ``` -->
+
+
 ```{css, echo=FALSE}
-.pagedjs_page:not(:first-of-type) {
-  --sidebar-width: 0rem;
-  --sidebar-background-color: #ffffff;
-  --main-width: calc(var(--content-width) - var(--sidebar-width));
-  --decorator-horizontal-margin: 0.2in;
+.aside {
+  padding-top: 0;
+}
+
+.aside > p:first-of-type {
+  margin-top: 0;
 }
 ```
 
@@ -71,9 +82,9 @@ knitr::include_graphics(here::here("img/language_skill.jpeg"))
 
 ## Interests {#interests}
 
--   Reproducible Research
--   Methods
--   Clinical Psychology
+-   **Open Science**: Reproducible Analysis Pipelines and Reports, Data Management, FAIR data
+-   **Methods**: Measurement and Psychometrics
+-   **Clinical Psychology**: Transdiagnostic Psychopathology
 
 ## Disclaimer {#disclaimer}
 
@@ -86,6 +97,7 @@ Last updated on `r Sys.Date()`
 ## Jan Luca Schnatz {#title}
 
 ### Student of Psychology at Goethe University
+This is a test
 
 ## Education {data-icon="graduation-cap" data-concise="true"}
 
