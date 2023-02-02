@@ -97,7 +97,6 @@ Last updated on `r Sys.Date()`
 ## Jan Luca Schnatz {#title}
 
 ### Student of Psychology at Goethe University
-This is a test
 
 ## Education {data-icon="graduation-cap" data-concise="true"}
 
@@ -123,7 +122,7 @@ edu_data %>%
     timeline = ifelse(
       is.na(start) | start == end,
       end,
-      glue("{end} - {start}")
+      glue("{start} - {end}")
     ),
     description_bullets = map_chr(descriptions, ~ paste("-", ., collapse = "\n")),
   ) %>%
@@ -167,16 +166,16 @@ emp_data %>%
     timeline = ifelse(
       is.na(start) | start == end,
       end,
-      glue("{end} - {start}")
+      glue("{start} - {end}")
     ),
     description_bullets = map_chr(descriptions, ~ paste("-", ., collapse = "\n")),
   ) %>%
   mutate_all(~ ifelse(is.na(.), "", .)) %>%
   glue_data(
     "### {title}",
-    "\n\n",
+    "\n\n\n",
     "{org}",
-    "\n\n",
+    "\n\n\n",
     "{loc}",
     "\n\n",
     "{timeline}",

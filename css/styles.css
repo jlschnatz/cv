@@ -61,7 +61,7 @@ sup {
 :root {
   --sidebar-width: 15rem; /* Shrink sidebar width  */ 
   --sidebar-background-color: #F7F7F7; /* Make sidebar grey */
-  --sidebar-horizontal-padding: 0.01in; /* Reduce sidebar padding */
+  --sidebar-horizontal-padding: 0.005in; /* Reduce sidebar padding */
   --decorator-outer-dim: 10px; /* Make position deliniating circles larger */
   --decorator-border: 2px solid #009FB7; /* Make timeline a blue as well*/
 }
@@ -107,7 +107,7 @@ sup {
 }
 
 .details li ul li {
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 /* Less line spaceing for skills section */
