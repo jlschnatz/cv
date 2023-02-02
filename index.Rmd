@@ -1,6 +1,6 @@
 ---
-title: "W. Jake Thompson's CV"
-author: W. Jake Thompson
+title: "Personal CV"
+author: "J. L. Schnatz"
 date: "`r Sys.Date()`"
 output:
   pagedown::html_resume:
@@ -9,21 +9,37 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+# knitr chunk options
 knitr::opts_chunk$set(
-  results = "asis", 
+  results = "asis",
   echo = FALSE,
   warning = FALSE,
   message = FALSE
 )
 
-library(tidyverse)
-library(readxl)
-library(magick)
-library(glue)
-library(janitor)
-library(bib2df)
+# load packages
+if (!"pacman" %in% installed.packages()) {
+  install.packages("pacman")
+}
+pacman::p_load(
+  tidyverse, readxl, magick, here,
+  glue, janitor, bib2df,
+  cropcircles, icons, fs
+)
 
-source("parse-citations.R")
+# source external .R-scripts
+fs::dir_ls(here("lib")) %>%
+  walk(source)
+
+# download icons
+icon_set <- c(
+  "academicons", "bioicons",
+  "feather_icons", "fontawesome",
+  "simple_icons", "octicons",
+  "ionicons"
+)
+
+icon_set %>% map_lgl(install_icon)
 ```
 
 ```{css, echo=FALSE}
@@ -37,39 +53,27 @@ source("parse-citations.R")
 
 # Aside
 
-```{r logo, warning = FALSE, message = FALSE, error = FALSE, fig.align = "center", out.width="50%"}
-logo <- image_read("https://raw.githubusercontent.com/wjakethompson/wjakethompson.com/main/static/img/wjakethompson.png")
-logo
+```{r logo, warning = FALSE, message = FALSE, error = FALSE, fig.align = "center", out.width="80%"}
+print_circle_image(.path = here("img/image_02.jpeg"), .bw = TRUE)
 ```
 
 ## Contact {#contact}
 
--   <i class="fa fa-envelope"></i> [wjakethompson\@gmail.com](mailto:wjakethompson@gmail.com){.email}
--   <i class="fa fa-link"></i> [wjakethompson.com](https://wjakethompson.com)
--   <i class="fa fa-github"></i> [\@wjakethompson](https://github.com/wjakethompson)
--   <i class="fa fa-twitter"></i> [\@wjakethompson](https://twitter.com/wjakethompson)
+-   <i class="fa fa-envelope"></i> [Schnatz\@stud.uni-frankfurt.de](mailto:Schnatz@stud.uni-frankfurt.de){.email}
+-   <i class="fa fa-github"></i> [\@jlschnatz](https://github.com/jlschnatz)
+-   <i class="fa fa-twitter"></i>[\@jlschnatz](https://twitter.com/jlschnatz)
 
 ## Skills {#skills}
 
-**Programming:**
+```{r lang, warning = FALSE, message = FALSE, error = FALSE, fig.align = "center", out.width="110%"}
+knitr::include_graphics(here::here("img/language_skill.jpeg"))
+```
 
--   R
--   R Markdown
--   Stan
+## Interests {#interests}
 
-**Psychometrics:**
-
--   Diagnostic Classification Models
--   Item Response Theory
--   Reliability
--   Differential Item Functioning
--   
-
-**Data Analysis:**
-
--   Bayesian statistics
--   Generalized linear models
--   Multilevel models
+-   Reproducible Research
+-   Methods
+-   Clinical Psychology
 
 ## Disclaimer {#disclaimer}
 
@@ -79,315 +83,100 @@ Last updated on `r Sys.Date()`
 
 # Main
 
-## W. Jake Thompson, PhD {#title}
+## Jan Luca Schnatz {#title}
 
-### Psychometrician & R Developer
+### Student of Psychology at Goethe University
 
 ## Education {data-icon="graduation-cap" data-concise="true"}
 
 ```{r print-edu}
-edu_data <- read_xlsx("cv-data.xlsx", sheet = "education")
+edu_data <- read_xlsx(here("data/cv-data.xlsx"), sheet = "education")
 
-edu_data %>% 
-    arrange(desc(end)) %>% 
-    mutate(id = 1:n()) %>% 
-    pivot_longer(
-      starts_with('description'),
-      names_to = 'description_num',
-      values_to = 'description',
-      values_drop_na = TRUE
-    ) %>% 
-    group_by(id) %>% 
-    mutate(
-      descriptions = list(description)
-    ) %>% 
-    ungroup() %>% 
-    filter(description_num == 'description_1') %>% 
-    mutate(
-      timeline = ifelse(
-        is.na(start) | start == end,
-        end,
-        glue('{end} - {start}')
-      ),
-      description_bullets = map_chr(descriptions, ~paste('-', ., collapse = '\n')),
-    ) %>% 
-    mutate_all(~ifelse(is.na(.), 'N/A', .)) %>% 
-    glue_data(
-      "### {title}",
-      "\n\n",
-      "{institution}",
-      "\n\n",
-      "{loc}",
-      "\n\n",
-      "{timeline}", 
-      "\n\n",
-      "{description_bullets}",
-      "\n\n\n",
-    )
-```
-
-## Employment {data-icon="suitcase"}
-
-```{r print-emp}
-emp_data <- read_xlsx("cv-data.xlsx", sheet = "employment")
-
-emp_data %>%
-  replace_na(list(end = "present")) %>%
-  # mutate_at(vars(start, end), str_replace_all, pattern = "-[0-9]*$", "") %>%
-  nest(data = -c(org, institution, loc)) %>%
-  mutate(print_data = map(data, function(x) {
-    current <- filter(x, end == "present")
-    previous <- filter(x, end != "present")
-    
-    prev_positions <- x %>%
-      select(title:end) %>%
-      separate(start, c("start_year", "start_month"), "-", convert = TRUE) %>%
-      separate(end, c("end_year", "end_month"), "-", convert = TRUE,
-               fill = "right") %>%
-      mutate(start_month = month.name[start_month],
-             end_month = map_chr(end_month, function(x) {
-               if (is.na(x)) return(NA_character_)
-               month.name[x]
-             }),
-             label = glue("{title} ({start_month} {start_year}--{end_month} {end_year})")) %>%
-      pull(label) %>%
-      str_replace_all("NA ", "") %>%
-      as.character() %>%
-      list()
-    
-    current %>%
-      pivot_longer(contains("description"), names_to = "description_num",
-                   values_to = "description") %>%
-      filter(!is.na(description)) %>%
-      group_by(title) %>%
-      mutate(descriptions = list(description)) %>%
-      ungroup() %>%
-      filter(description_num == "description_1") %>%
-      mutate(full_start = min(x$start)) %>%
-      separate(full_start, c("start_year", "start_month"), convert = TRUE) %>%
-      mutate(timeline = glue("{end} - {month.name[start_month]} {start_year}"),
-             timeline = as.character(timeline),
-             description_bullets = map_chr(descriptions, ~paste("-", .x, collapse = "\n")),
-             prev_pos = ifelse(nrow(previous) == 0, NA_character_,
-                               paste("**Position History**\n\n",
-                                     map_chr(prev_positions, ~paste("-", .x, collapse = "\n"))))) %>%
-      select(title, timeline, description_bullets, prev_pos)
-  })) %>%
-  select(-data) %>%
-  unnest(cols = c(print_data)) %>%
+edu_data %>%
+  arrange(desc(end)) %>%
+  mutate(id = 1:n()) %>%
+  pivot_longer(
+    starts_with("description"),
+    names_to = "description_num",
+    values_to = "description",
+    values_drop_na = TRUE
+  ) %>%
+  group_by(id) %>%
+  mutate(
+    descriptions = list(description)
+  ) %>%
+  ungroup() %>%
+  filter(description_num == "description_1") %>%
+  mutate(
+    timeline = ifelse(
+      is.na(start) | start == end,
+      end,
+      glue("{end} - {start}")
+    ),
+    description_bullets = map_chr(descriptions, ~ paste("-", ., collapse = "\n")),
+  ) %>%
+  mutate_all(~ ifelse(is.na(.), "N/A", .)) %>%
   glue_data(
-    "### {org}{ifelse(is.na(institution), '', paste(',', institution))}",
+    "### {title}",
     "\n\n",
-    "{title}",
+    "{institution}",
     "\n\n",
     "{loc}",
     "\n\n",
     "{timeline}",
     "\n\n",
     "{description_bullets}",
-    "\n\n",
-    "{ifelse(is.na(prev_pos), '', prev_pos)}",
-    "\n\n\n"
+    "\n\n\n",
   )
 ```
 
-## Publications {data-icon="book"}
+## Professional Experience {data-icon="suitcase"}
 
-```{r print-pub}
-format_bib("bib/pubs.bib") %>%
-  mutate(across(where(is.character), ~str_replace_all(.x, "\\{|\\}", "")),
-         author = map_chr(author, all_authors),
-         year = as.integer(year),
-         month = as.integer(month)) %>%
-  arrange(desc(year), desc(month), author) %>%
-  group_by(year) %>%
-  mutate(count = 1:n()) %>%
+```{r print-emp}
+emp_data <- read_xlsx(here("data/cv-data.xlsx"), sheet = "employment")
+
+emp_data %>%
+  replace_na(list(end = "present")) %>%
+  arrange(desc(end)) %>%
+  mutate(id = 1:n()) %>%
+  pivot_longer(
+    starts_with("description"),
+    names_to = "description_num",
+    values_to = "description",
+    values_drop_na = TRUE
+  ) %>%
+  group_by(id) %>%
+  mutate(
+    descriptions = list(description)
+  ) %>%
   ungroup() %>%
-  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year))) %>%
+  filter(description_num == "description_1") %>%
+  mutate(
+    timeline = ifelse(
+      is.na(start) | start == end,
+      end,
+      glue("{end} - {start}")
+    ),
+    description_bullets = map_chr(descriptions, ~ paste("-", ., collapse = "\n")),
+  ) %>%
+  mutate_all(~ ifelse(is.na(.), "", .)) %>%
   glue_data(
     "### {title}",
     "\n\n",
-    "{citation}",
+    "{org}",
     "\n\n",
-    "N/A",
+    "{loc}",
     "\n\n",
-    "{year}",
-    "\n\n\n"
-  )
-```
-
-## Technical Reports {data-icon="file-alt"}
-
-```{r print-tech}
-format_bib("bib/tech.bib") %>%
-  mutate(across(where(is.character), ~str_replace_all(.x, "\\{|\\}", "")),
-         author = map_chr(author, all_authors),
-         year = as.integer(year),
-         month = as.integer(month)) %>%
-  arrange(desc(year), desc(month), author) %>%
-  group_by(year) %>%
-  mutate(count = 1:n()) %>%
-  ungroup() %>%
-  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year))) %>%
-  glue_data(
-    "### {title}",
+    "{timeline}",
     "\n\n",
-    "{citation}",
-    "\n\n",
-    "N/A",
-    "\n\n",
-    "{year}",
-    "\n\n\n"
-  )
-```
-
-## Conference Presentations {data-icon="users"}
-
-```{r print-conf}
-format_bib("bib/conf.bib") %>%
-  mutate(across(where(is.character), ~str_replace_all(.x, "\\{|\\}", "")),
-         author = map_chr(author, all_authors),
-         year = as.integer(year),
-         month = as.integer(month)) %>%
-  separate(eventdate, c("year", "month", "day", NA, NA, "end_day"),
-           fill = "right", extra = "drop", convert = TRUE) %>%
-  arrange(desc(year), desc(month), desc(day), desc(end_day), author) %>%
-  group_by(year) %>%
-  mutate(count = 1:n()) %>%
-  ungroup() %>%
-  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year))) %>%
-  glue_data(
-    "### {title}",
-    "\n\n",
-    "{citation}",
-    "\n\n",
-    "N/A",
-    "\n\n",
-    "{year}",
-    "\n\n\n"
-  )
-```
-
-## R Packages {data-icon="cube"}
-
-```{r install-rpkg, include = FALSE}
-check_pkg <- function(x) {
-  pkg <- str_replace(x, ".*\\/", "")
-  if (str_detect(x, "\\/")) {
-    suppressMessages(remotes::install_github(x, force = FALSE))
-  } else {
-    update.packages(pkg, ask = FALSE)
-  }
-  requireNamespace(pkg, quietly = TRUE)
-}
-
-my_pkg <- c("atlas-aai/dlmr", "atlas-aai/rstandlm", "wjakethompson/jayhawkdown",
-            "atlas-aai/ratlas", "wjakethompson/taylor", "wjakethompson/wjake",
-            "wjakethompson/measr", "tdcmStan")
-my_installed <- vapply(my_pkg, check_pkg, logical(1))
-```
-
-```{r print-rpkg}
-if (all(my_installed)) {
-  if (file.exists("bib/rpkg.bib")) unlink("bib/rpkg.bib")
-  file.create("bib/rpkg.bib")
-  
-  walk(my_pkg, function(.x) {
-    pkg <- str_replace_all(.x, ".*\\/", "")
-    meta <- packageDescription(pkg)
-    
-    authors <- meta$Author %>% 
-      str_split(",\\n  ") %>% 
-      flatten_chr() %>% 
-      str_subset("aut") %>% 
-      str_replace_all(" \\[.*", "") %>% 
-      str_replace_all("\\n.*", "") %>% 
-      knitr::combine_words(sep = " and ", oxford_comma = FALSE)
-    
-    repo <- meta$Repository
-    
-    if (!is.null(repo) && repo == "CRAN") {
-      last_date <- meta$`Date/Publication` %>% 
-        lubridate::ymd_hms(tz = "UTC") %>% 
-        lubridate::as_date()
-      
-      url <- citation(pkg)$url
-    } else {
-      last_commit <- gh::gh(glue("/repos/{.x}/commits/{meta$RemoteSha}"))
-      last_date <- last_commit$commit$author$date %>% 
-        lubridate::ymd_hms() %>% 
-        lubridate::as_date()
-      
-      url <- meta$URL %>% 
-        str_split(",\\n") %>% 
-        flatten_chr() %>% 
-        str_replace_all(", ", ",") %>% 
-        knitr::combine_words(sep = ",", and = ",", oxford_comma = FALSE)
-    }
-   
-    cite <- if (length(url)) {
-      glue("@Manual{{R-{pkg},
-              title = {{{pkg}: {str_replace_all(meta$Title, '\\n', ' ')}}},
-              author = {{{authors}}},
-              year = {{{lubridate::year(last_date)}}},
-              date = {{{last_date}}},
-              note = {{R package version {meta$Version}}},
-              url = {{{url}}}
-            }}")
-    } else {
-      glue("@Manual{{R-{pkg},
-              title = {{{pkg}: {meta$Title}}},
-              author = {{{authors}}},
-              year = {{{lubridate::year(last_date)}}},
-              date = {{{last_date}}},
-              note = {{R package version {meta$Version}}}
-            }}")
-    }
-    
-    
-    write_lines(cite, file = "bib/rpkg.bib", append = TRUE)
-  })
-} else {
-  stop("Not all packages installed", call. = FALSE)
-}
-
-read_lines("bib/rpkg.bib") %>%
-  str_replace_all("Dynamic Learning Maps", "{Dynamic Learning Maps}") %>%
-  str_replace_all("University of Kansas", "{University of Kansas}") %>% 
-  str_replace_all("ATLAS", "{ATLAS}") %>% 
-  str_replace_all("Taylor Swift's", "{Taylor Swift's}") %>% 
-  str_replace_all(" R ", " {R} ") %>% 
-  str_replace_all("Bayesian", "{Bayesian}") %>% 
-  str_replace_all("(?<!R-)tdcmStan", "{tdcmStan}") %>% 
-  str_replace_all("(?<!m)Stan", "{Stan}") %>% 
-  str_replace_all("TDCMs", "{TDCMs}") %>% 
-  write_lines("bib/rpkg.bib")
-
-format_bib("bib/rpkg.bib") %>%
-  mutate(author = map_chr(author, all_authors, last_first = FALSE),
-         year = as.integer(year),
-         date = lubridate::ymd(date)) %>%
-  arrange(desc(date), author) %>%
-  group_by(year) %>%
-  mutate(count = 1:n()) %>%
-  ungroup() %>%
-  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year)),
-         title = map_chr(title, format_pkg_title)) %>%
-  glue_data(
-    "### {title}",
-    "\n\n",
-    "{citation}",
-    "\n\n",
-    "N/A",
-    "\n\n",
-    "{year}",
-    "\n\n\n"
+    "{description_bullets}",
+    "\n\n\n",
   )
 ```
 
 ## Tutorials and Workshops {data-icon="chalkboard-teacher"}
 
-```{r print-work}
+```{r}
 format_bib("bib/work.bib") %>%
   mutate(across(where(is.character), ~str_replace_all(.x, "\\{|\\}", "")),
          author = map_chr(author, all_authors),
@@ -398,7 +187,7 @@ format_bib("bib/work.bib") %>%
   group_by(year) %>%
   mutate(count = 1:n()) %>%
   ungroup() %>%
-  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year))) %>%
+#  mutate(year = case_when(count != 1 ~ "N/A", TRUE ~ as.character(year))) %>%
   glue_data(
     "### {title}",
     "\n\n",
@@ -411,81 +200,4 @@ format_bib("bib/work.bib") %>%
   )
 ```
 
-## Awards {data-icon="award"}
 
-```{r print-awds}
-awd_data <- read_xlsx("cv-data.xlsx", sheet = "awards")
-gnt_data <- read_xlsx("cv-data.xlsx", sheet = "grants")
-
-awards <- awd_data %>%
-  filter(display) %>%
-  mutate(date = case_when(is.na(end_date) ~ as.character(start_date),
-                          TRUE ~ paste0(start_date, "--", end_date)),
-         display_text = glue("- {award} ({date})"),
-         status = "Professional Awards") %>%
-  group_by(status) %>%
-  summarize(bullets = paste(display_text, collapse = "\n"))
-
-grants <- gnt_data %>%
-  mutate(display_text = glue("- **{role}:** *{title}*{ifelse(is.na(start), '', paste0(' (', start, '--', end, ')'))}. {sponsor}{ifelse(is.na(funding), '.', paste0('; $', prettyNum(funding, big.mark = ','), '.'))} {ifelse(is.na(pi), '', paste0('PI: ', pi, '.'))}")) %>%
-  arrange(desc(start)) %>%
-  group_by(status) %>%
-  summarize(bullets = paste(display_text, collapse = "\n"))
-
-
-bind_rows(grants, awards) %>%
-  mutate(status = factor(status,
-                         levels = c("Currently Funded",
-                                    "Under Review",
-                                    "Previously Funded",
-                                    "Unfunded",
-                                    "Professional Awards"),
-                         labels = c("Currently Funded Projects",
-                                    "Projects Under Review",
-                                    "Previously Funded Projects",
-                                    "Unfunded Projects",
-                                    "Professional Awards"))) %>%
-  arrange(status) %>%
-  glue_data(
-    "### {status}",
-    "\n\n",
-    "{bullets}",
-    "\n\n",
-    "N/A",
-    "\n\n\n"
-  )
-
-```
-
-## Service {data-icon="handshake"}
-
-### Institutional Service
-
--   University of Kansas
-    -   Research Technology working group (2021)
-
-N/A
-
-### Professional Affiliations
-
--   American Educational Research Association (2015--present)
-    -   Division D: Measurement and Research Methodology
-    -   SIG: Cognition and Assessment
-    -   Program Chair, Cognition and Assessment SIG (2022--2023)
--   American Statistical Association (2019--present)
-    -   Sections: Bayesian Statistical Science, Statistical Computing, Statistics in Sports
--   National Council on Measurement in Education (2015--present)
-    -   SIGIMIE: Diagnostic Measurement
-    -   Student Representative, Diversity and Testing Committee (2015)
-
-N/A
-
-### Reviewer
-
--   Behaviormetrika (2019--present)
--   International Journal of Research in Education and Science (2019--present)
--   Journal of Open Source Software (2019--present)
--   National Council on Measurement in Education annual meeting (2019--present)
--   American Educational Research Association, Division H, Outstanding Publications (2019)
-
-N/A
