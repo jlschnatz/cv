@@ -70,9 +70,9 @@ print_circle_image(.path = here("img/image_02.jpeg"), .bw = TRUE)
 
 ## Contact {#contact}
 
--   <i class="fa fa-envelope"></i> [Schnatz\@stud.uni-frankfurt.de](mailto:Schnatz@stud.uni-frankfurt.de){.email}
--   <i class="fa fa-github"></i> [\@jlschnatz](https://github.com/jlschnatz)
--   <i class="fa fa-twitter"></i>[\@jlschnatz](https://twitter.com/jlschnatz)
+-   <i class="fa fa-envelope"></i> &nbsp;&nbsp;&nbsp; [Schnatz\@stud.uni-frankfurt.de](mailto:Schnatz@stud.uni-frankfurt.de){.email}
+-   <i class="fa fa-github"></i> &nbsp;&nbsp;&nbsp; [\@jlschnatz](https://github.com/jlschnatz)
+-   <i class="fa fa-twitter"></i> &nbsp;&nbsp;&nbsp; [\@jlschnatz](https://twitter.com/jlschnatz)
 
 ## Skills {#skills}
 
@@ -86,9 +86,9 @@ knitr::include_graphics(here::here("img/language_skill.jpeg"))
 -   **Methods**: Measurement and Psychometrics
 -   **Clinical Psychology**: Transdiagnostic Psychopathology
 
-## Disclaimer {#disclaimer}
+<!-- ## Disclaimer {#disclaimer} -->
 
-Made with the R package [**pagedown**](https://github.com/rstudio/pagedown).
+<!-- Made with the R package [**pagedown**](https://github.com/rstudio/pagedown). -->
 
 Last updated on `r Sys.Date()`
 

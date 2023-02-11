@@ -7,7 +7,10 @@ showtext_auto()
 showtext_opts(dpi = 600)
 bg_col <- "#F7F7F7"
 highlight_col <- "#009FB7"
+highlight_col <- "#5591A4"
   
+"#7AA5B4"
+
 skills_data <- read_xlsx(here("data/cv-data.xlsx"), sheet = "skills")
 
 proc_skill_data <- skills_data %>% 

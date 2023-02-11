@@ -37,7 +37,7 @@ strong {
 }
 
 a {
-  color: #009FB7;
+  color: #5591A4;
 }
 
 /* When in PDF export mode make sure superscripts are nice and small and italic */
@@ -59,11 +59,11 @@ sup {
 
 /* Customize some of the sizing variables */
 :root {
-  --sidebar-width: 15rem; /* Shrink sidebar width  */ 
+  --sidebar-width: 16rem; /* Shrink sidebar width  */ 
   --sidebar-background-color: #F7F7F7; /* Make sidebar grey */
   --sidebar-horizontal-padding: 0.005in; /* Reduce sidebar padding */
   --decorator-outer-dim: 10px; /* Make position deliniating circles larger */
-  --decorator-border: 2px solid #009FB7; /* Make timeline a blue as well*/
+  --decorator-border: 2px solid #5591A4; /* Make timeline a blue as well*/
 }
 
 .details .place {
