@@ -65,7 +65,7 @@ icon_set %>% map_lgl(install_icon)
 # Aside
 
 ```{r logo, warning = FALSE, message = FALSE, error = FALSE, fig.align = "center", out.width="80%"}
-print_circle_image(.path = here("img/image_02.jpeg"), .bw = TRUE)
+print_circle_image(.path = here("img/potrait_image.jpeg"), .bw = TRUE)
 ```
 
 ## Contact {#contact}
