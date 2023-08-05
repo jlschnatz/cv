@@ -65,7 +65,7 @@ icon_set %>% map_lgl(install_icon)
 # Aside
 
 ```{r logo, warning = FALSE, message = FALSE, error = FALSE, fig.align = "center", out.width="80%"}
-print_circle_image(.path = here("img/potrait_image.jpeg"), .bw = TRUE)
+print_circle_image(.path = here("img/portrait_image2.jpeg"), .bw = TRUE)
 ```
 
 ## Contact {#contact}
@@ -82,9 +82,9 @@ knitr::include_graphics(here::here("img/language_skill.jpeg"))
 
 ## Interests {#interests}
 
--   **Open Science**: Reproducible Analysis Pipelines and Reports, Data Management, FAIR data
--   **Methods**: Measurement and Psychometrics
--   **Clinical Psychology**: Transdiagnostic Psychopathology
+-   **Open Science**: reproducible analysis pipelines and reports, data management, FAIR data, replication crisis
+<br/>
+-   **Clinical Neuropsychology**
 
 <!-- ## Disclaimer {#disclaimer} -->
 
